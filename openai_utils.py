@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 import requests
 import json
@@ -20,14 +21,23 @@ def parse_user_message(text):
         f"Mensaje: {text}"
     )
 
-    response = requests.post(
-        "http://localhost:11434/api/generate",
-        json={
-            "model": "llama2",
-            "prompt": prompt,
-            "stream": False
-        }
-    )
+    API = os.getenv("API_KEY")
+    try:
+        response = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {API}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama3-8b-8192",
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+    except Exception as e:
+        print(f"❌ Error al consultar Ollama: {e}")
+        return "Lo siento, hubo un error al procesar tu mensaje."
 
     result = response.json()
     respuesta = result.get("response", "")

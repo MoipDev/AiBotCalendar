@@ -66,14 +66,17 @@ async def webhook():
 
 
 def ask_ollama(question):
-    """
-    Función que consulta Ollama usando la API REST
-    """
+
+    API = os.getenv("API_KEY")
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {API}",
+                "Content-Type": "application/json"
+            },
             json={
-                "model": "llama2",  # Ajusta al modelo que tengas disponible
+                "model": "llama3-8b-8192",
                 "prompt": f"Actúa como un asistente amigable y responde en español: {question}",
                 "stream": False
             }
