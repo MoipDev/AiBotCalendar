@@ -53,7 +53,7 @@ async def webhook():
                                        text="⚠️ No pude crear la cita en Google Calendar. Revisa tus credenciales.")
         else:
             # Responder con el asistente de IA
-            response = ask_ollama(text)
+            response = ask_groq(text)
             if not response.strip():
                 response = "Lo siento, no pude procesar tu mensaje."
             await bot.send_message(chat_id=chat_id, text=response)
@@ -65,8 +65,7 @@ async def webhook():
     return "ok"
 
 
-def ask_ollama(question):
-
+def ask_groq(question):
     API = os.getenv("API_KEY")
     try:
         response = requests.post(
@@ -77,20 +76,25 @@ def ask_ollama(question):
             },
             json={
                 "model": "llama3-8b-8192",
-                "prompt": f"Actúa como un asistente amigable y responde en español: {question}",
-                "stream": False
+                "messages": [
+                    {"role": "system", "content": "Eres un asistente útil que responde en español."},
+                    {"role": "user", "content": question}
+                ],
+                "temperature": 0.7
             }
         )
-        print("🌐 Status Ollama:", response.status_code)  # 👈 DEBUG
-        print("📦 Respuesta cruda Ollama:", response.text[:500])  # 👈 DEBUG
+
+        print("🌐 Status Groq:", response.status_code)
         result = response.json()
+        print("📦 Respuesta cruda Groq:", result)
 
         if "error" in result:
-            return f"⚠️ Error de Ollama: {result['error']}"
-        return result.get("response", "Lo siento, no pude generar una respuesta.")
+            return f"⚠️ Error de Groq: {result['error']['message']}"
+
+        return result["choices"][0]["message"]["content"]
 
     except Exception as e:
-        print(f"❌ Error al consultar Ollama: {e}")
+        print(f"❌ Error al consultar Groq: {e}")
         return "Lo siento, hubo un error al procesar tu mensaje."
 
 
