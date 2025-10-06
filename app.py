@@ -75,7 +75,7 @@ def ask_groq(question):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama3-8b-8192",
+                "model": "llama-3.1-8b-instant",
                 "messages": [
                     {"role": "system", "content": "Eres un asistente útil que responde en español."},
                     {"role": "user", "content": question}

@@ -30,7 +30,7 @@ def parse_user_message(text):
                 "Content-Type": "application/json"
             },
             json={
-                "model": "llama3-8b-8192",
+                "model": "llama-3.1-8b-instant",
                 "messages": [
                     {"role": "system", "content": "Eres un asistente que extrae información estructurada de texto."},
                     {"role": "user", "content": prompt}
